@@ -14,13 +14,12 @@ import java.io.IOException;
 
 public class pacmanProcessing extends PApplet {
 
-PImage bg;
 int tileSize;
 Player player;
 Maze maze;
 
-int img_w = 560;
-int img_h = 620;
+int maze_w = 560;
+int maze_h = 620;
 
 int start_w = 25;
 int start_h = 25;
@@ -37,7 +36,6 @@ public void setup() {
   
   frameRate(60);
 
-  bg = loadImage("maze.png");  //560x620 (the grid is 28 x 31)
   f1 = createFont("Arial Bold", 18);
   tileSize = 20;
   player = new Player();
@@ -49,23 +47,22 @@ public void setup() {
 public void draw() {
   //Draw the background and maze first
   background(0);
-  //image(bg, 25, 25);  //notice there is an offset of 25 and 25 for x, y
   maze.display();
 
   //Show the highscore current score and
   textFont(f1);
   fill(255);
-  text("HIGH SCORE: " + highscore, 100, 17);
-  text("CURRENT SCORE: " + score, 350, 17);
+  text("HIGH SCORE: " + 0, 100, 17);    //not implemented yet
+  text("CURRENT SCORE: " + player.score, 350, 17);
 
   //This is just to help visualize the grid
   stroke(255);
   fill(255);
-  for(int i = start_w; i <= img_w + start_w; i+=tileSize) {
-    line(i, start_h, i, img_h + start_h);
+  for(int i = start_w; i <= maze_w + start_w; i+=tileSize) {
+    line(i, start_h, i, maze_h + start_h);
   }
-  for(int j = start_h; j <= img_h + start_h; j += tileSize) {
-    line(start_w, j, img_w + start_w, j);
+  for(int j = start_h; j <= maze_h + start_h; j += tileSize) {
+    line(start_w, j, maze_w + start_w, j);
   }
 
   for(int i = 0; i < speed; ++i) {
@@ -108,24 +105,11 @@ class Entity {
   }
 
   public void move(Maze maze) {
-    //Just a defenition
+    //filler
   }
 
   public void display() {
-    fill(255, 255, 0);
-    noStroke();
-    ellipse(pos.x, pos.y, size, size);
-
-    stroke(255, 0, 0);
-    noFill();
-    int x, y;
-    x = round(gridPos.x);
-    x *= tile;
-    x += gridOff.x - tile / 2;
-    y = round(gridPos.y);
-    y *= tile;
-    y += gridOff.y - tile / 2;
-    rect(x, y, tile, tile);     //this just helps visualize the players pos on the grid
+    //filler
   }
 
   public void changeDir(int dir) {
@@ -169,7 +153,7 @@ class Maze {
   int cols, rows;
   int tile;
   int offset;
-  int foodSize;
+  int foodSize, pelletSize;
 
   Maze(String maze) {
     lines = loadStrings(maze);
@@ -178,7 +162,8 @@ class Maze {
     grid = new char[cols][rows];
     tile = 20;
     offset = 25;   //Because the grid is centered, we have to account for the offset
-    foodSize = 8;
+    foodSize = 5;
+    pelletSize = 8;
 
     for(int i = 0; i < cols; ++i) {
       for(int j = 0; j < rows; ++j) {
@@ -214,13 +199,17 @@ class Maze {
          int x = i * tile + offset;
          int y = j * tile + offset;
          if(grid[i][j] == '1') {
-           fill(0, 0, 255);
            noStroke();
+           fill(0, 0, 255);
+           rectMode(CORNER);
            rect(x, y, tile, tile);
          } else if(grid[i][j] == 'f') {
            fill(255);
-           noStroke();
-           ellipse(x + tile / 2, y + tile / 2, foodSize, foodSize);
+           rectMode(CENTER);
+           rect(x + tile / 2, y + tile / 2, foodSize, foodSize);
+         } else if(grid[i][j] == 'p') {
+           fill(255);
+           ellipse(x + tile / 2, y + tile / 2, pelletSize, pelletSize);
          }
        }
      }
@@ -229,10 +218,12 @@ class Maze {
 }
 class Player extends Entity {
   int score;
+  boolean power;
 
   Player() {
     super();
     score = 0;
+    power = false;
   }
 
   /**
@@ -259,12 +250,38 @@ class Player extends Entity {
       } else if(nextCell == 'f') {
         score += 10;
         maze.setCell(PApplet.parseInt(gridPos.x + vel.x), PApplet.parseInt(gridPos.y + vel.y),'0');
+      } else if(nextCell == 'p') {
+        score += 50;
+        power = true;
+        maze.setCell(PApplet.parseInt(gridPos.x + vel.x), PApplet.parseInt(gridPos.y + vel.y),'0');
       }
     }
 
     pos.add(vel);
     gridPos = PVector.sub(pos, gridOff);
     gridPos.div(tile);
+  }
+
+  public void display() {
+    if(power){
+      fill(255, 0, 0);
+    } else {
+      fill(255, 255, 0);
+    }
+    
+    noStroke();
+    ellipse(pos.x, pos.y, size, size);
+
+    stroke(255, 0, 0);
+    noFill();
+    int x, y;
+    x = round(gridPos.x);
+    x *= tile;
+    x += gridOff.x - tile / 2;
+    y = round(gridPos.y);
+    y *= tile;
+    y += gridOff.y - tile / 2;
+    rect(x, y, tile, tile);     //this just helps visualize the players pos on the grid
   }
 
 }

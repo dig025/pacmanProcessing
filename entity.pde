@@ -17,24 +17,11 @@ class Entity {
   }
 
   void move(Maze maze) {
-    //Just a defenition
+    //filler
   }
 
   void display() {
-    fill(255, 255, 0);
-    noStroke();
-    ellipse(pos.x, pos.y, size, size);
-
-    stroke(255, 0, 0);
-    noFill();
-    int x, y;
-    x = round(gridPos.x);
-    x *= tile;
-    x += gridOff.x - tile / 2;
-    y = round(gridPos.y);
-    y *= tile;
-    y += gridOff.y - tile / 2;
-    rect(x, y, tile, tile);     //this just helps visualize the players pos on the grid
+    //filler
   }
 
   void changeDir(int dir) {

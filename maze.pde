@@ -11,7 +11,7 @@ class Maze {
   int cols, rows;
   int tile;
   int offset;
-  int foodSize;
+  int foodSize, pelletSize;
 
   Maze(String maze) {
     lines = loadStrings(maze);
@@ -20,7 +20,8 @@ class Maze {
     grid = new char[cols][rows];
     tile = 20;
     offset = 25;   //Because the grid is centered, we have to account for the offset
-    foodSize = 7;
+    foodSize = 5;
+    pelletSize = 8;
 
     for(int i = 0; i < cols; ++i) {
       for(int j = 0; j < rows; ++j) {
@@ -56,13 +57,17 @@ class Maze {
          int x = i * tile + offset;
          int y = j * tile + offset;
          if(grid[i][j] == '1') {
-           fill(0, 0, 255);
            noStroke();
+           fill(0, 0, 255);
+           rectMode(CORNER);
            rect(x, y, tile, tile);
          } else if(grid[i][j] == 'f') {
            fill(255);
-           noStroke();
-           ellipse(x + tile / 2, y + tile / 2, foodSize, foodSize);
+           rectMode(CENTER);
+           rect(x + tile / 2, y + tile / 2, foodSize, foodSize);
+         } else if(grid[i][j] == 'p') {
+           fill(255);
+           ellipse(x + tile / 2, y + tile / 2, pelletSize, pelletSize);
          }
        }
      }

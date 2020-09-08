@@ -33,7 +33,8 @@ void setup() {
 void draw() {
   //Draw the background and maze first
   background(0);
-  image(bg, 25, 25);
+  //image(bg, 25, 25);  //notice there is an offset of 25 and 25 for x, y
+  maze.display();
 
   //Show the highscore current score and
   textFont(f1);

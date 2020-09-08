@@ -49,7 +49,8 @@ public void setup() {
 public void draw() {
   //Draw the background and maze first
   background(0);
-  image(bg, 25, 25);
+  //image(bg, 25, 25);  //notice there is an offset of 25 and 25 for x, y
+  maze.display();
 
   //Show the highscore current score and
   textFont(f1);
@@ -107,22 +108,7 @@ class Entity {
   }
 
   public void move(Maze maze) {
-    if(gridPos.x % 1 == 0 && gridPos.y % 1 == 0) {
-      if(nextDir.x != vel.x || nextDir.y != vel.y) {
-        if(maze.wall(PApplet.parseInt(gridPos.x + nextDir.x), PApplet.parseInt(gridPos.y + nextDir.y))) {
-          //Do nothing, cant turn into a wall
-        } else {
-          vel = nextDir.copy();
-        }
-      }
-      if(maze.wall(PApplet.parseInt(gridPos.x + vel.x), PApplet.parseInt(gridPos.y + vel.y))) {
-        vel.mult(0);
-      }
-    }
-
-    pos.add(vel);
-    gridPos = PVector.sub(pos, gridOff);
-    gridPos.div(tile);
+    //Just a defenition
   }
 
   public void display() {
@@ -181,12 +167,18 @@ class Maze {
   String[] lines;
   char[][] grid;
   int cols, rows;
+  int tile;
+  int offset;
+  int foodSize;
 
   Maze(String maze) {
     lines = loadStrings(maze);
     cols = 28;
     rows = 31;
     grid = new char[cols][rows];
+    tile = 20;
+    offset = 25;   //Because the grid is centered, we have to account for the offset
+    foodSize = 8;
 
     for(int i = 0; i < cols; ++i) {
       for(int j = 0; j < rows; ++j) {
@@ -199,18 +191,82 @@ class Maze {
  * This returns true if the cell at i j is a 1 (a wall)
  * false otherwise
  */
-  public boolean wall(int i, int j) {
-    if(grid[i][j] == '1') {
-      return true;
-    }
-
-    return false;
+  public char getCell(int i, int j) {
+    return grid[i][j];
   }
+
+  /*
+   * Allows the user to set a specific cell in the grid to any char
+   * ideally would be 'f' or '0' (when the player eats food 'f', set to empty '0' )
+   */
+  public void setCell(int i, int j, char c) {
+    grid[i][j] = c;
+  }
+
+  /*
+   * This will display the maze using plain rectangles
+   * can also be used to display food for player...
+   * the problem is we have to loop through the whole matrix linearly :(
+   */
+   public void display() {
+     for(int i = 0; i < cols; ++i) {
+       for(int j = 0; j < rows; ++j) {
+         int x = i * tile + offset;
+         int y = j * tile + offset;
+         if(grid[i][j] == '1') {
+           fill(0, 0, 255);
+           noStroke();
+           rect(x, y, tile, tile);
+         } else if(grid[i][j] == 'f') {
+           fill(255);
+           noStroke();
+           ellipse(x + tile / 2, y + tile / 2, foodSize, foodSize);
+         }
+       }
+     }
+
+   }
 }
 class Player extends Entity {
+  int score;
+
   Player() {
     super();
+    score = 0;
   }
+
+  /**
+   * moves the player one pixel at a time in whatever direction the vel is
+   * will collide with walls, if the player enters a cell with food in it,
+   * it will consume the food and score will go up
+   **/
+  public void move(Maze maze) {
+    if(gridPos.x % 1 == 0 && gridPos.y % 1 == 0) {
+      char nextCell;
+
+      if(nextDir.x != vel.x || nextDir.y != vel.y) {
+        nextCell = maze.getCell(PApplet.parseInt(gridPos.x + nextDir.x), PApplet.parseInt(gridPos.y + nextDir.y));
+        if(nextCell == '1') {
+          //Do nothing, cant turn into a wall
+        } else {
+          vel = nextDir.copy();
+        }
+      }
+
+      nextCell = maze.getCell(PApplet.parseInt(gridPos.x + vel.x), PApplet.parseInt(gridPos.y + vel.y));
+      if(nextCell == '1') {
+        vel.mult(0);
+      } else if(nextCell == 'f') {
+        score += 10;
+        maze.setCell(PApplet.parseInt(gridPos.x + vel.x), PApplet.parseInt(gridPos.y + vel.y),'0');
+      }
+    }
+
+    pos.add(vel);
+    gridPos = PVector.sub(pos, gridOff);
+    gridPos.div(tile);
+  }
+
 }
   public void settings() {  size(610, 670); }
   static public void main(String[] passedArgs) {

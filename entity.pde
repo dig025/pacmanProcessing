@@ -17,22 +17,7 @@ class Entity {
   }
 
   void move(Maze maze) {
-    if(gridPos.x % 1 == 0 && gridPos.y % 1 == 0) {
-      if(nextDir.x != vel.x || nextDir.y != vel.y) {
-        if(maze.wall(int(gridPos.x + nextDir.x), int(gridPos.y + nextDir.y))) {
-          //Do nothing, cant turn into a wall
-        } else {
-          vel = nextDir.copy();
-        }
-      }
-      if(maze.wall(int(gridPos.x + vel.x), int(gridPos.y + vel.y))) {
-        vel.mult(0);
-      }
-    }
-
-    pos.add(vel);
-    gridPos = PVector.sub(pos, gridOff);
-    gridPos.div(tile);
+    //Just a defenition
   }
 
   void display() {

@@ -40,7 +40,7 @@ void draw() {
   text("CURRENT SCORE: " + player.score, 350, 17);
 
   //This is just to help visualize the grid
-  stroke(255);
+  /*stroke(255);
   fill(255);
   for(int i = start_w; i <= maze_w + start_w; i+=tileSize) {
     line(i, start_h, i, maze_h + start_h);
@@ -48,6 +48,7 @@ void draw() {
   for(int j = start_h; j <= maze_h + start_h; j += tileSize) {
     line(start_w, j, maze_w + start_w, j);
   }
+  */
 
   for(int i = 0; i < speed; ++i) {
     player.display();

@@ -1,19 +1,12 @@
 class Entity {
-  PVector gridPos, gridOff;  //The player's position on the grid and the offset
-  PVector pos, vel; //The player's position and velocity in pixels
+  PVector gridPos, gridOff;  //The entity's position on the grid and the offset
+  PVector pos, vel; //The entity's position and velocity in pixels
   PVector nextDir;
-  int tile, size;   //The size of a tile and the size of the player
+  int tile, size;   //The size of a tile and the size of the Entity
 
   Entity() {
     tile = 20;
     size = 15;
-    gridPos = new PVector(14, 23);
-    gridOff = new PVector(25 + tile / 2, 25 + tile / 2);
-    pos = PVector.mult(gridPos, tile);  //To get pixel pos, we multiply the gridpos by the tilesize
-    pos.add(gridOff);                   //Then we offset it by 25 + half a tile
-    vel = new PVector(0, 0);
-    nextDir = new PVector(0, 0);
-
   }
 
   void move(Maze maze) {
@@ -22,6 +15,14 @@ class Entity {
 
   void display() {
     //filler
+  }
+  
+  /**
+   * Gets the players current grid position and returns it as a PVector
+   **/
+  PVector getPos() {
+    PVector p = gridPos.copy();
+    return p;
   }
 
   void changeDir(int dir) {

@@ -4,6 +4,15 @@ class Player extends Entity {
 
   Player() {
     super();
+
+    gridPos = new PVector(14, 23);
+    gridOff = new PVector(25 + tile / 2, 25 + tile / 2);
+    pos = PVector.mult(gridPos, tile);  //To get pixel pos, we multiply the gridpos by the tilesize
+    pos.add(gridOff);                   //Then we offset it by 25 + half a tile
+
+    vel = new PVector(0, 0);
+    nextDir = new PVector(0, 0);
+
     score = 0;
     power = false;
   }
@@ -29,13 +38,21 @@ class Player extends Entity {
       nextCell = maze.getCell(int(gridPos.x + vel.x), int(gridPos.y + vel.y));
       if(nextCell == '1') {
         vel.mult(0);
-      } else if(nextCell == 'f') {
+      } else if(nextCell == 'f') {    //**********Need to try and make coin eating seem more smooth (eating coin too early)**********//
         score += 10;
         maze.setCell(int(gridPos.x + vel.x), int(gridPos.y + vel.y),'0');
       } else if(nextCell == 'p') {
         score += 50;
         power = true;
         maze.setCell(int(gridPos.x + vel.x), int(gridPos.y + vel.y),'0');
+      } else if(nextCell == 'r') {
+        gridPos = new PVector(4, 14);
+        pos = PVector.mult(gridPos, tile);  //To get pixel pos, we multiply the gridpos by the tilesize
+        pos.add(gridOff);                   //Then we offset it by 25 + half a tile
+      } else if(nextCell == 'l') {
+        gridPos = new PVector(23, 14);
+        pos = PVector.mult(gridPos, tile);  //To get pixel pos, we multiply the gridpos by the tilesize
+        pos.add(gridOff);                   //Then we offset it by 25 + half a tile
       }
     }
 
@@ -50,7 +67,7 @@ class Player extends Entity {
     } else {
       fill(255, 255, 0);
     }
-    
+
     noStroke();
     ellipse(pos.x, pos.y, size, size);
 
